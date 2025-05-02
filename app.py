@@ -7,18 +7,20 @@ from nltk.tokenize import RegexpTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
-nltk.download('punkt')
+# Télécharger uniquement ce qui est nécessaire
 nltk.download('stopwords')
 
-# Nettoyage
+# Initialisation des ressources
 stop_words_fr = set(stopwords.words('french'))
+tokenizer = RegexpTokenizer(r'\w+')
 
+# Fonction de nettoyage de texte
 def nettoyer_texte(texte):
     if pd.isnull(texte):
         return ""
     texte = texte.lower()
     texte = texte.translate(str.maketrans('', '', string.punctuation))
-    tokens = word_tokenize(texte, language='french')
+    tokens = tokenizer.tokenize(texte)
     tokens = [mot for mot in tokens if mot not in stop_words_fr]
     return ' '.join(tokens)
 
@@ -26,18 +28,18 @@ def nettoyer_texte(texte):
 train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
 
-# Prétraitement
+# Prétraitement des textes
 train["text_clean"] = train["text"].apply(nettoyer_texte)
 X_train = train["text_clean"]
 y_train = train["sentiment"]
 
+# Vectorisation et apprentissage
 vectorizer = TfidfVectorizer()
 X_train_vect = vectorizer.fit_transform(X_train)
-
 model = LogisticRegression(max_iter=200)
 model.fit(X_train_vect, y_train)
 
-# Création de l'app Flask
+# Création de l'application Flask
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
