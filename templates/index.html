@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse de Sentiments</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        form {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            max-width: 500px;
+            font-size: 16px;
+            padding: 10px;
+        }
+        input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .label {
+            width: 80px;
+            font-weight: bold;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .bar-container {
+            flex-grow: 1;
+            background-color: #ddd;
+            border-radius: 25px;
+            height: 25px;
+            overflow: hidden;
+        }
+        .bar {
+            height: 100%;
+            line-height: 25px;
+            color: white;
+            text-align: right;
+            padding-right: 10px;
+            border-radius: 25px;
+        }
+        .positive { background-color: #4CAF50; }
+        .neutral { background-color: #FFC107; }
+        .negative { background-color: #F44336; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Analyseur de Sentiments</h1>
+    <form method="post">
+        <textarea name="texte" rows="4" cols="60" placeholder="Entrez un texte ici..." required></textarea><br>
+        <input type="submit" value="Analyser">
+    </form>
+
+    {% if resultat %}
+        <div class="result">
+            <h2>👉 Résultat</h2>
+            <p><strong>Sentiment dominant :</strong> {{ resultat.prediction.upper() }}</p>
+            {% for sentiment, pourcentage in resultat.details %}
+                <div class="bar-row">
+                    <div class="label">{{ sentiment.capitalize() }} :</div>
+                    <div class="bar-container">
+                        <div class="bar {{ sentiment.lower() }}" style="width: {{ pourcentage|replace('%','') }}%">
+                            {{ pourcentage }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>
